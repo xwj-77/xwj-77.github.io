@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Home Page</title>
+    <style>
+        *{
+            border: 2px solid blue;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        body{
+            height : 99vh ;
+            font-size: calc(0.5em + 2vw);
+        }
+        header{
+            height: 20%;
+            font-size: 2em;
+            background-color: blanchedalmond;
+        }
+        nav{
+            height: 7%;
+            font-size: 4.5vh;
+        }
+        main{
+            height: 63%;
+            font-size: 1.2em;
+            background-color: aquamarine;
+        }
+        footer{
+            height: 10%;
+            color: azure;
+            background-color: black;
+        }
+        button{
+            font-size: 3.6vh;
+        }
+    </style>
+    <script>
+        let Model={};
+        Model.cet6String='';
+        Model.CET6=[];
+        Model.cetUrl=['cet/cet1.txt','cet/cet2.txt','cet/cet3.txt'];
+        for(let i=0;i<Model.cetUrl.length;i++){
+        fetch(Model.cetUrl[i])
+        .then(res=>res.text())
+        .then(txt=>{
+        Model.cet6String+=txt;
+        UI.log('单词库：'+Model.cetUrl[i]+'加载成功!');
+        });
+        };
+
+        </script>
+</head>
+<body>
+    <header>
+        Welcome To My Home Page
+    </header>
+    <nav>
+        <button id="randWord">随机单词</button>
+        <button id="loadWord">读取单词</button>
+    </nav>
+    <main>
+        <p id="word">abandon</p >
+        <p id="pron">/ə'bændən/</p >
+        <p id="chinese">vt.离弃,丢弃;遗弃,抛弃;放弃</p >
+    </main>
+    <footer>
+        江西科技师范大学 谢文杰 15579164281
+    </footer>
+    <script>
+        function select(str){
+        let dom = document.querySelector(str);
+        return dom;
+        }
+        let UI={};
+        UI.log=function(s){
+        select('footer').textContent=s;
+        };
+        UI.headLog=function(s){
+        select('header').textContent=s;
+        };
+        select('button#loadWord').onclick=function(){
+            Model.CET6=Model.cet6String.split('\r\n');
+            if(Model.CET6.length<5000){
+                UI.log('wait');
+            }else{
+                UI.log("已读入"+Model.CET6.length+"单词") 
+            }
+        };
+        select('button#randWord').onclick=function(){
+            Model.CET6=Model.cet6String.split('\r\n');
+            if(Model.CET6.length<5000){
+                UI.log("请点击读入");
+            }else{
+                let rand = Math.floor(Math.random()*Model.CET6.length);
+                UI.headLog(Model.CET6[rand]);
+                UI.log("已读入"+Model.CET6.length+"单词") 
+            }
+        };
+        
+    </script>
+</body>
+</html>
