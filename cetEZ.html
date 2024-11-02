@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cetEZ</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        p{
+            border: 2px solid black;
+            padding: 2%;
+            margin: 2%;
+        }
+        body{
+            height: 99vh ;
+            font-size: calc(0.5em + 2vw);
+            position: relative;
+        }
+        header{
+            height: 20%;
+            font-size: 2em;
+            background-color: blanchedalmond;
+        }
+        nav{
+            height: 7%;
+            font-size: 4.5vh;
+        }
+        main{
+            height: 61%;
+            font-size: 1.2em;
+            background-color: aquamarine;
+        }
+        form{
+          background-color: #00e1ff;
+          position: absolute;
+          width: 90%;
+          height: 80%;
+          left: 5% ;
+          top: 10% ;
+          border: 2px solid black;
+        }
+        form input{
+        font-size: 1.1em ;
+        width: 6em;
+        }
+        form button{
+        font-size: 1.3rem ;
+        margin-right: 1em;
+        }
+        footer{
+            height: 10%;
+            color: azure;
+            background-color: black;
+        }
+        button{
+            font-size: 3.6vh;
+        }
+        header span#response{
+        font-size: 0.3em;
+        color: red;
+        position: absolute;
+        right: 0.5em;
+    }
+    </style>
+    <script>  
+         let Model = {
+        } ; 
+    Model.users = [ {userName: 'xwj' , passWord: '123'} ] ;
+    {
+         
+         let str = localStorage.getItem('users') ;
+        if(str){
+          let users = JSON.parse(str) ;
+          Model.users = users ;
+         }
+       }
+        Model.cet6String = "";
+        Model.CET6 = [] ;
+    {
+      let createCET6=function(str){
+        let arr = str.split('\r\n') ;
+        for(let i=0; i< arr.length ; i++){
+          let s = arr[i] ;
+          let word = {} ;
+          let wordArr = s.split('\t') ;
+          word.en = wordArr[0] ;
+          word.pn = wordArr[1] ;
+          word.cn = wordArr[2] ;
+          Model.CET6.push(word) ;    
+        }
+      }
+      fetch('cet/cet1.txt')
+        .then(res => res.text())
+        .then(txt => {
+                     Model.CET6 = [] ;
+                     createCET6(txt) ;
+                     UI.log('第一部分单词已经读入系统！');
+        }) ;
+        fetch('cet/cet2.txt')
+        .then(res => res.text())
+        .then(txt => {                             
+                     createCET6(txt) ;
+                     UI.log('第二部分单词已经读入系统！');
+                  }
+        ) ;
+        fetch('cet/cet3.txt')
+        .then(res => res.text())
+        .then(txt => {                             
+                     createCET6(txt) ;
+                     UI.log('最后一部分单词已经读入系统！');
+                  }
+        ) ;
+        createCET6(Model.cet6String) ; 
+ }
+    </script>
+</head>
+<body>
+    <header>
+      轻松背单词——CET6
+      <span id = 'response'></span>
+    </header>
+    <nav>
+      <button id="firstWord">开始单词</button>
+      <button id="nextWord">继续单词</button>
+      <button id="lastWord">最后单词</button>
+      <button id="saveWord">进度存盘</button>
+     </nav>
+    <main>
+      <p id="en"></p>
+      <p id="pn"></p>
+      <p id="cn"></p>
+    </main>
+    
+    <footer>
+      江西科技师范大学谢文杰
+    </footer>
+    <form id="myForm">
+      <p>用户：<input type="text" name="userName"/></p>
+      <p>密码：<input type="password" name="passWord" /></p>
+      <button id = "sign" name="sign">
+         注册
+      </button>
+      <button id = "login" name="login">
+         登录
+      </button>
+  </form>
+    <script>
+      let UI = {} ;
+      UI.form = select('form#myForm') ;
+      UI.response = function(s){
+    select('span#response').textContent = s ;
+  }
+      UI.form.sign.onclick = function(ev){
+        ev.preventDefault() ;
+     if(UI.form.userName.value.trim() !=="" && UI.form.passWord.value.trim() !==""){
+        let name = UI.form.userName.value ;
+        let pass = UI.form.passWord.value ;
+        let user = { userName : name , 
+                     passWord : pass
+        } ;
+        let users = Model.users ;
+        let exist = false ;
+           for(let u of users){
+             if(u.userName === user.userName){
+                exist = true ;
+                break ;
+             }
+           }
+           if(exist){
+            UI.log('您注册的用户名：'+ user.userName + '重复存在，不成功！') ;
+           }else{
+            users.push(user) ;
+            let s = JSON.stringify(users);
+            localStorage.setItem('users',s) ;
+            UI.log('您注册的用户：'+ user.userName + '已经成功！') ;
+
+           }
+        }else{
+          alert("用户名和密码不能为空！");
+        }
+      } ;
+      UI.form.login.onclick = function(ev){
+        ev.preventDefault() ;
+        let name = UI.form.userName.value ;
+        let pass = UI.form.passWord.value ;
+        let user = { userName : name , 
+                     passWord : pass
+        } ;
+        let users = Model.users ;
+        let exist = false ;
+           for(let u of users){
+             if(u.userName === user.userName && u.passWord === user.passWord ){
+                exist = true ;
+                break ;
+             }
+           }
+           if(exist){
+            UI.log('用户名：'+ user.userName + '登录成功！') ;
+            UI.form.style.display = 'none' ;
+           }else{
+            UI.log( '用户名：' + user.userName + '，登录失败！') ;
+           }
+      } ; 
+      UI.log = function(s){
+       select('footer').textContent = s ;
+      } ;
+     UI.printWord = function(word){
+        select('p#en').textContent = word.en ;
+        select('p#pn').textContent = word.pn ;
+        select('p#cn').textContent = word.cn ;
+     } ;
+     select('button#firstWord').onclick = function(){
+          let CET6 =  Model.CET6 ;
+              Model.pos = 0 ;
+          let word = CET6[Model.pos] ;
+          UI.printWord(word);
+          UI.log('你选中了第 1 个单词');
+       } ;
+    select('button#lastWord').onclick = function(){
+          let CET6 =  Model.CET6 ;
+              Model.pos = CET6.length -1 ;
+          let word = CET6[Model.pos] ;
+          UI.printWord(word);
+          UI.log('你选中了最后一个单词');
+       } ;
+       
+       select('button#nextWord').onclick = function(){
+          let CET6 =  Model.CET6 ;
+          if(Model.pos === CET6.length - 1 ){
+            Model.pos = 0 ;
+          }else{
+            Model.pos ++ ;
+          }
+          let word = CET6[Model.pos] ;
+          UI.printWord(word);
+          UI.log('你选中了第' + (Model.pos+1) +  '个单词！');
+          UI.response('加油，继续吧！');
+       } ;
+       function select(selector){
+        let dom = document.querySelector(selector) ;
+        return dom ;
+      }
+    </script>
+</body>
+</html>
