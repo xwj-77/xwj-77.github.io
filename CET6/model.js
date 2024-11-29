@@ -126,7 +126,7 @@
   UI.footerLog = function(s){
     select('footer').textContent = s ;
     setTimeout(() => {
-        select('footer').textContent = "江西科技师范大学 李健宏 2024--2025" ;
+        select('footer').textContent = "谢文杰 15579164281" ;
     }, 3*1000);
   };
   UI.response = function(s){
